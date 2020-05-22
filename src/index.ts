@@ -51,10 +51,17 @@ function main() {
   scriptable = new ScriptableScene(scene);
 
   let script = [
-    "var pos = {};",
-    "var scale = {};",
-    "var rot = {};",
-    "scene.add(pos, scale, rot);"
+    "var pos = {x:-5,y:0,z:-5};",
+    "var scale = {x:1,y:1,z:1};",
+    "var rot = {x:0,y:0,z:0};",
+    "scene.create(pos, scale, rot);",
+    "while(pos.x < 5) {",
+    "  while(pos.z < 4) {",
+    "    pos.z += 1.0; rot.x += 2.3;",
+    "    scene.create(pos, scale, rot);",
+    "  }",
+    "  pos.z = -6; pos.x+=1.0",
+    "}",
   ].join("\n");
 
   interpreter = new Interpreter(script, (interpreter, globalObject) => {
@@ -69,7 +76,9 @@ function animate(time: number) {
 
   cameraControls.update();
 
-  interpreter.step();
+  for(let i = 0; i< 10; i++){
+    interpreter.step();
+  }
 
   renderer.render(scene, camera);
 }

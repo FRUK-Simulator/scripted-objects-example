@@ -37,6 +37,7 @@ class Things {
     constructor(public scene: THREE.Scene) { this.catalog = new Map(); this.nextId = 0; }
 
     create(pos: XYZ, scale: XYZ, rot: XYZ): number {
+        console.log("create", arguments);
         let id = this.nextId++;
         let newThing = new Thing(pos, scale, rot, this.scene);
         this.catalog.set(id, newThing);
@@ -45,6 +46,7 @@ class Things {
     }
 
     read(id: number): Object {
+        console.log("read", arguments);
         if (this.catalog.has(id)) {
             return this.catalog.get(id).toObject();
         }
@@ -52,6 +54,7 @@ class Things {
     }
 
     update(id: number, pos: XYZ, scale: XYZ, rot: XYZ): void {
+        console.log("update", arguments);
         if (!this.catalog.has(id)) { return; }
         let thing = this.catalog.get(id);
         if (pos !== undefined) { thing.pos = pos; }
@@ -60,6 +63,7 @@ class Things {
     }
 
     delete(id: number): void {
+        console.log("delete", arguments);
         if (!this.catalog.has(id)) { return; }
         let thing = this.catalog.get(id);
         this.scene.remove(thing.mesh);
@@ -79,14 +83,35 @@ export class ScriptableScene {
     bind(interpreter: Interpreter, scope: any): void {
         let sceneObject = interpreter.nativeToPseudo({});
 
-        interpreter.setProperty(sceneObject, 'create', 
-            interpreter.createNativeFunction(this.things.create.bind(this.things)));
-        interpreter.setProperty(sceneObject, 'read', 
-            interpreter.createNativeFunction((id: number) => { let obj = this.things.read(id); return interpreter.nativeToPseudo(obj); }));
-        interpreter.setProperty(sceneObject, 'update', 
-            interpreter.createNativeFunction(this.things.update.bind(this.things)));
-        interpreter.setProperty(sceneObject, 'delete', 
-            interpreter.createNativeFunction(this.things.delete.bind(this.things)));
+        let c = (p: any, s: any, r: any) => {
+            if (p !== undefined) p = p.properties;
+            if (s !== undefined) s = s.properties;
+            if (r !== undefined) r = r.properties;
+
+            return this.things.create(p, s, r);
+        };
+
+        let r = (id: number) => {
+            let obj = this.things.read(id);
+            return interpreter.nativeToPseudo(obj);
+        };
+
+        let u = (id: number, p: any, s: any, r: any) => {
+            if (p !== undefined) p = p.properties;
+            if (s !== undefined) s = s.properties;
+            if (r !== undefined) r = r.properties;
+
+            this.things.update(id, p, s, r);
+        };
+
+        let d = (id: number) => {
+            this.things.delete(id);
+        };
+
+        interpreter.setProperty(sceneObject, 'create', interpreter.createNativeFunction(c));
+        interpreter.setProperty(sceneObject, 'read', interpreter.createNativeFunction(r));
+        interpreter.setProperty(sceneObject, 'update', interpreter.createNativeFunction(u));
+        interpreter.setProperty(sceneObject, 'delete', interpreter.createNativeFunction(d));
 
         interpreter.setProperty(scope, 'scene', sceneObject);
     }
