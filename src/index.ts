@@ -2,6 +2,7 @@ import Interpreter from 'js-interpreter';
 import * as THREE from 'three';
 import { TrackballControls } from 'three-trackballcontrols-ts';
 import { ScriptableScene } from './scenebinder';
+import * as monaco from 'monaco-editor';
 
 window.onload = main;
 
@@ -13,17 +14,22 @@ let cameraControls: TrackballControls;
 let interpreter: Interpreter;
 let scriptable: ScriptableScene;
 
+let editor: monaco.editor.IStandaloneCodeEditor;
+let codeRunning = false;
+
 function main() {
   console.log("Hello world");
 
+  let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+
   // Rendering setup
-  let height = Math.min(480, window.innerHeight);
-  let width = Math.min(640, window.innerWidth);
+  let height = canvas.clientHeight;
+  let width = canvas.clientWidth;
 
   camera = new THREE.PerspectiveCamera(70, width / height, 0.001, 100);
   camera.position.z = 4;
   camera.position.y = 4;
-  
+
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xeeeeee);
 
@@ -35,12 +41,11 @@ function main() {
   pointLight.position.z = 3;
   scene.add(pointLight);
 
-  let rendererParams: THREE.WebGLRendererParameters = { antialias: true };
-  renderer = new THREE.WebGLRenderer(rendererParams);
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    canvas: canvas
+  });
   renderer.setSize(width, height);
-  renderer.domElement.classList.add("canvas");
-  
-  document.body.appendChild(renderer.domElement);
 
   cameraControls = new TrackballControls(camera, renderer.domElement);
 
@@ -50,7 +55,20 @@ function main() {
 
   scriptable = new ScriptableScene(scene);
 
+  setup_editor();
+
+  requestAnimationFrame(animate);
+}
+
+function setup_editor() {
+
   let script = [
+    "// Delete items in the scene",
+    "var items = scene.list();",
+    "for(var i = 0;i<items.length;i++) {",
+    "  scene.delete(i);",
+    "}",
+    "// Create a few cubes",
     "var pos = {x:-5,y:0,z:-5};",
     "var scale = {x:1,y:1,z:1};",
     "var rot = {x:0,y:0,z:0};",
@@ -64,11 +82,22 @@ function main() {
     "}",
   ].join("\n");
 
-  interpreter = new Interpreter(script, (interpreter, globalObject) => {
+  editor = monaco.editor.create(document.getElementById("code"), {
+    value: script,
+    language: "javascript"
+  });
+
+  let button = <HTMLButtonElement>document.getElementById("run");
+
+  interpreter = new Interpreter("", (interpreter, globalObject) => {
     scriptable.bind(interpreter, globalObject);
   });
 
-  requestAnimationFrame(animate);
+  button.addEventListener('click', (ev) => {
+    interpreter.appendCode(editor.getValue());
+    codeRunning = true;
+    ev.preventDefault();
+  });
 }
 
 function animate(time: number) {
@@ -76,8 +105,13 @@ function animate(time: number) {
 
   cameraControls.update();
 
-  for(let i = 0; i< 10; i++){
-    interpreter.step();
+  if(codeRunning) {
+    for (let i = 0; i < 10; i++) {
+      if(false == interpreter.step()) {
+        codeRunning = false;
+        break;
+      }
+    }
   }
 
   renderer.render(scene, camera);

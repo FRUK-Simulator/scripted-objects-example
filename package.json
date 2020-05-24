@@ -4,16 +4,21 @@
   "description": "after installing node:\r ```sh\r $ npm install\r $ npm run start\r ```\r then browsing to http://localhost:8080 should show you the results. any changes made to the code will cause a reload.",
   "main": "none",
   "scripts": {
-    "build": "webpack",
-    "start": "webpack-dev-server",
+    "build": "webpack --env.production",
+    "start": "webpack-dev-server --env.dev",
     "test": "webpack"
   },
   "author": "James Peach <jpeach6@bloomberg.net>",
   "license": "MIT",
   "dependencies": {
     "@types/dat.gui": "^0.7.5",
+    "css-loader": "^3.5.3",
     "dat.gui": "^0.7.7",
+    "file-loader": "^6.0.0",
     "js-interpreter": "^2.2.0",
+    "monaco-editor": "^0.20.0",
+    "monaco-editor-webpack-plugin": "^1.9.0",
+    "style-loader": "^1.2.1",
     "three": "^0.116.1",
     "three-trackballcontrols": "0.0.8",
     "three-trackballcontrols-ts": "^0.2.1",

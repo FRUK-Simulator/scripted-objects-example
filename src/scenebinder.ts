@@ -108,10 +108,16 @@ export class ScriptableScene {
             this.things.delete(id);
         };
 
+        let l = () => {
+            let list = this.things.list();  
+            return interpreter.nativeToPseudo(list);
+        };
+
         interpreter.setProperty(sceneObject, 'create', interpreter.createNativeFunction(c));
         interpreter.setProperty(sceneObject, 'read', interpreter.createNativeFunction(r));
         interpreter.setProperty(sceneObject, 'update', interpreter.createNativeFunction(u));
         interpreter.setProperty(sceneObject, 'delete', interpreter.createNativeFunction(d));
+        interpreter.setProperty(sceneObject, 'list', interpreter.createNativeFunction(l));
 
         interpreter.setProperty(scope, 'scene', sceneObject);
     }
