@@ -1,6 +1,9 @@
 name: Build and Deploy
 
-on: [push]
+on: 
+  push:
+#    branches:
+#      - master
 
 jobs:
   build-and-deploy:
@@ -15,13 +18,12 @@ jobs:
         run: |
           npm install
           npm run build
-
-      - name: Remove .gitignore
-        run: rm .gitignore
+          mkdir html
+          cp -r static/* html/
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: .
+        uses: peaceiris/actions-gh-pages@v2.3.1
+        env:
+          PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: html

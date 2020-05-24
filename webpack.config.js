@@ -18,11 +18,11 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'static/dist'),
   },
   devServer: {
     writeToDisk: true,
-    contentBase: __dirname,
+    contentBase: path.resolve(__dirname, 'static'),
     compress: true,
     port: 8080,
     hot:true,
