@@ -94,8 +94,15 @@ function setup_editor() {
   });
 
   button.addEventListener('click', (ev) => {
-    interpreter.appendCode(editor.getValue());
-    codeRunning = true;
+    try {
+      interpreter.appendCode(editor.getValue());
+      codeRunning = true;
+      log('message', 'code started');
+    } catch (e) {
+      log('error', 'error running code:' + e);
+      console.log("Error appending code:", e);
+    }
+
     ev.preventDefault();
   });
 }
@@ -105,14 +112,22 @@ function animate(time: number) {
 
   cameraControls.update();
 
-  if(codeRunning) {
+  if (codeRunning) {
     for (let i = 0; i < 10; i++) {
-      if(false == interpreter.step()) {
+      if (false == interpreter.step()) {
         codeRunning = false;
+        log('message', 'code finished');
         break;
       }
     }
   }
 
   renderer.render(scene, camera);
+}
+
+function log(claz: 'warning' | 'info' | 'message' | 'error', message: string): void {
+  let logElement = document.createElement('p');
+  logElement.classList.add(claz);
+  logElement.innerText = message;
+  document.getElementById('log').appendChild(logElement);
 }

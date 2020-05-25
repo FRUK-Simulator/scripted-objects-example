@@ -5,3 +5,39 @@ body > * {width:100%;}
     display: grid;
     grid-template-rows: 30px 1fr;
 }
+#canvas{ width:100%; }
+
+#log > p {
+    margin: 0;
+    padding: 0.8em 0.8em 0.8em 3em;
+    font-size: 1.0em;
+    font-family: monospace;
+    border-style: solid;
+    border-width: 1px 0px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    position: relative;
+}
+#log p:before {
+    content: " ";
+    
+    font-size: 3em;
+
+    position: absolute;
+    top: -0.2em;
+    left: 0.2em;
+}
+
+#log .message {
+    border-color: yellow;
+    background: lightyellow;
+    color: rgb(165, 165, 0);
+}
+#log .warning {
+    border-color: orange;
+    background: lightsalmon;
+    color: rgb(182, 76, 15);
+}
+#log .warning:before {
+    content: "⚠️";
+}
