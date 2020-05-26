@@ -47,7 +47,7 @@ module.exports = env => {
       overlay: true
     },
     plugins: [
-      new MonacoWebpackPlugin()
+      new MonacoWebpackPlugin({publicPath: 'dist/', languages: ['javascript']})
     ]
   };
 };
