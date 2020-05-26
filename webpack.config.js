@@ -37,8 +37,8 @@ module.exports = env => {
     output: {
       filename: 'bundle.js',
       path: path.resolve(__dirname, 'static/dist'),
+      publicPath: 'dist/',
     },
-    publicPath: 'dist/',
     devServer: {
       writeToDisk: true,
       contentBase: path.resolve(__dirname, 'static'),
