@@ -19,7 +19,7 @@
     "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
     "style-loader": "^1.2.1",
-    "three": "^0.116.1",
+    "three": "^0.125.0",
     "three-trackballcontrols": "0.0.8",
     "three-trackballcontrols-ts": "^0.2.1",
     "ts-loader": "^7.0.4",
